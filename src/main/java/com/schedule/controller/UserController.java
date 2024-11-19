@@ -1,7 +1,9 @@
 package com.schedule.controller;
 
+import com.schedule.dto.request.UserLoginRequest;
 import com.schedule.dto.request.UserSignupRequest;
 import com.schedule.dto.request.UserUpdateRequest;
+import com.schedule.dto.response.UserLoginResponse;
 import com.schedule.dto.response.UserResponse;
 import com.schedule.service.UserService;
 import jakarta.validation.Valid;
@@ -44,5 +46,12 @@ public class UserController {
     public ResponseEntity<UserResponse> deleteUser(@PathVariable Long id, String email) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<UserLoginResponse> login(@Valid @RequestBody UserLoginRequest request) {
+        UserLoginResponse response = userService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

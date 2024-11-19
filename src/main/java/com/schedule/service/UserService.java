@@ -2,8 +2,10 @@ package com.schedule.service;
 
 import com.schedule.domain.Role;
 import com.schedule.domain.User;
+import com.schedule.dto.request.UserLoginRequest;
 import com.schedule.dto.request.UserSignupRequest;
 import com.schedule.dto.request.UserUpdateRequest;
+import com.schedule.dto.response.UserLoginResponse;
 import com.schedule.dto.response.UserResponse;
 import com.schedule.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -60,5 +62,20 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         userRepository.delete(user);
+    }
+
+    // 로그인
+    public UserLoginResponse login(UserLoginRequest request) {
+        // 1. 이메일로 사용자 찾기
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+
+        // 2. 비밀번호 확인
+        if (!user.getPassword().equals(request.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 로그인 성공 응답
+        return UserLoginResponse.from(user);
     }
 }
