@@ -13,6 +13,8 @@ public class UserResponse {
     private String name;    // 이름 정보
     private Role role;      // 권한 정보
     // 비밀번호는 민감한 정보이므로 응답에 포함하지 않는다.
+
+
     // Entity -> DTO 변환
     public static UserResponse from(User user) {
         UserResponse response = new UserResponse();

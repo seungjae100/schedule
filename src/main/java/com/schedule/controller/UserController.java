@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController // REST api 용 컨트롤러
 @RequestMapping("/users")
 @RequiredArgsConstructor // 생성자 주입
@@ -22,7 +24,9 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> signup(@Valid @RequestBody UserSignupRequest request) {
         UserResponse response = userService.signup(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity
+                .created(URI.create("/users" + response.getId()))
+                .body(response);
     }
 
     // 회원 정보 조회

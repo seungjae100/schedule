@@ -24,7 +24,7 @@ public class UserService {
     public UserResponse signup(UserSignupRequest request) {
         // 이메일 중복 검사
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new IllegalStateException("이미 존재하는 이메일입니다.");
         }
 
         // 새로운 회원 생성
