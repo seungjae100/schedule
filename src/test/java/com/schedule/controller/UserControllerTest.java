@@ -2,7 +2,9 @@ package com.schedule.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.schedule.domain.Role;
+import com.schedule.dto.request.UserLoginRequest;
 import com.schedule.dto.request.UserSignupRequest;
+import com.schedule.dto.response.UserLoginResponse;
 import com.schedule.dto.response.UserResponse;
 import com.schedule.service.UserService;
 import org.junit.jupiter.api.DisplayName;
@@ -76,6 +78,34 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest()) // 400 상태 코드 검증
                 //.andExpect(jsonPath("$.errors").exists()) // 에러 필드 존재 검증
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("로그인 API 성공")
+    void loginSuccess() throws Exception {
+        // given
+        UserLoginRequest request = new UserLoginRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("qor1234567!");
+
+        UserLoginResponse response = new UserLoginResponse();
+        response.setId(1L);
+        response.setEmail("test@test.com");
+        response.setName("테스터");
+
+        when(userService.login(any(UserLoginRequest.class)))
+                .thenReturn(response);
+
+        // when & then
+        mockMvc.perform(post("/users/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.email").value("test@test.com"))
+                .andExpect(jsonPath("$.name").value("테스터"))
+                .andExpect(jsonPath("$.password").doesNotExist()) // password 필드가 없는지 확인
                 .andDo(print());
     }
 }

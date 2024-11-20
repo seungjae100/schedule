@@ -2,7 +2,9 @@ package com.schedule.service;
 
 import com.schedule.domain.Role;
 import com.schedule.domain.User;
+import com.schedule.dto.request.UserLoginRequest;
 import com.schedule.dto.request.UserSignupRequest;
+import com.schedule.dto.response.UserLoginResponse;
 import com.schedule.dto.response.UserResponse;
 import com.schedule.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +35,7 @@ public class UserServiceTest {
         // given (테스트 데이터 준비)
         UserSignupRequest request = new UserSignupRequest();
         request.setEmail("test@test.com");
-        request.setPassword("1234");
+        request.setPassword("qor1234567!");
         request.setName("홍길동");
 
         // savedUser 준비 (DB 저장 후 반환될 User 엔티티)
@@ -67,7 +71,7 @@ public class UserServiceTest {
         // given
         UserSignupRequest request = new UserSignupRequest();
         request.setEmail("test@test.com");
-        request.setPassword("1234");
+        request.setPassword("qor1234567!");
         request.setName("홍길동");
 
         // 이메일 중복 상황 설정
@@ -84,5 +88,76 @@ public class UserServiceTest {
         // save 메서드가 호출되지 않았는지 검증
         verify(userRepository, never()).save(any());
 
+    }
+
+    @Test
+    @DisplayName("로그인 성공 테스트")
+    void loginSuccess() {
+        // given
+        UserLoginRequest request = new UserLoginRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("qor1234567!");
+
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        user.setPassword("qor1234567!");
+        user.setName("테스터");
+        user.setRole(Role.USER);
+
+        // userRepository 동작 정의
+        when(userRepository.findByEmail(request.getEmail()))
+                .thenReturn(Optional.of(user));
+
+        // when
+        UserLoginResponse response = userService.login(request);
+
+        //then
+        assertNotNull(response);
+        assertEquals(1L, response.getId());
+        assertEquals("test@test.com", response.getEmail());
+        assertEquals("테스터", response.getName());
+
+        // findByEmail 메서드 호출 검증
+        verify(userRepository).findByEmail(request.getEmail());
+
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 존재하지 않는 이메일")
+    void loginFailUserNotFound() {
+        // given
+        UserLoginRequest request = new UserLoginRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("qor1234567!");
+
+        when(userRepository.findByEmail(request.getEmail()))
+            .thenReturn(Optional.empty());
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login(request);
+        });
+    }
+
+    @Test
+    @DisplayName("로그인 실패 - 잘못된 비밀번호")
+    void loginFailWrongPassword() {
+        // given
+        UserLoginRequest request = new UserLoginRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("tests1w123214");
+
+        User user = new User();
+        user.setEmail("test@test.com");
+        user.setPassword("qor1234567!");
+
+        when(userRepository.findByEmail(request.getEmail()))
+                .thenReturn(Optional.of(user));
+
+        // when & then
+        assertThrows(IllegalArgumentException.class, () -> {
+            userService.login(request);
+        });
     }
 }
