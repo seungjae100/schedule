@@ -15,6 +15,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -70,14 +72,42 @@ public class UserControllerTest {
         // given
         UserSignupRequest request = new UserSignupRequest();
         request.setEmail("testEmail"); // 잘못된 이메일 형식
-        request.setPassword("1234");       // 빈 비밀번호
+        request.setPassword("");
+        request.setName("");
 
         // when & then
         mockMvc.perform(post("/users/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest()) // 400 상태 코드 검증
-                //.andExpect(jsonPath("$.errors").exists()) // 에러 필드 존재 검증
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.message").value("잘못된 입력값입니다."))
+                .andExpect(jsonPath("$.errors").isArray()) // errors 필드가 배열인지 검증
+                .andExpect(jsonPath("$.errors", hasSize(greaterThan(0))))  // 에러가 하나 이상 있는지 검증
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("회원가입 실패 - 이메일 중복")
+    void signupFailDuplicateEmail() throws Exception {
+        // given
+        UserSignupRequest request = new UserSignupRequest();
+        request.setEmail("test@test.com");
+        request.setPassword("qor1234567!");
+        request.setName("테스터");
+
+        // userService 가 던질 예외 정의
+        when(userService.signup(any()))
+                .thenThrow(new IllegalStateException("이미 존재하는 이메일입니다."));
+
+        // when & then
+        mockMvc.perform(post("/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest()) // 400 상태 코드
+                .andExpect(jsonPath("$.code").value("DUPLICATE_EMAIL"))
+                .andExpect(jsonPath("$.message").value("이미 존재하는 이메일입니다."))
+                .andExpect(jsonPath("$.errors").isArray())
                 .andDo(print());
     }
 
@@ -107,5 +137,20 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("테스터"))
                 .andExpect(jsonPath("$.password").doesNotExist()) // password 필드가 없는지 확인
                 .andDo(print());
+    }
+
+    @Test
+    @DisplayName("API 요청 시 필수 필드 누락")
+    void requiredFieldMissing() throws Exception {
+        UserSignupRequest request = new UserSignupRequest();
+        // email 만 설정
+        request.setEmail("test@test.com");
+
+        mockMvc.perform(post("/users/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("INVALID_INPUT"))
+                .andExpect(jsonPath("$.errors").isNotEmpty());
     }
 }
