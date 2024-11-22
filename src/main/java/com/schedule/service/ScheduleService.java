@@ -65,6 +65,17 @@ public class ScheduleService {
         scheduleRepository.deleteById(scheduleId);
     }
 
+    // 전체 일정 조회
+    public List<ScheduleResponse> getAllSchedules(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습ㄴ디ㅏ."));
+
+        return scheduleRepository.findByUser(user)
+                .stream()
+                .map(ScheduleResponse::new)
+                .collect(Collectors.toList());
+    }
+
     // 일정 상세 조회
     public ScheduleResponse getSchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)

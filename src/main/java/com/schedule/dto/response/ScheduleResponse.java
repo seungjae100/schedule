@@ -3,11 +3,13 @@ package com.schedule.dto.response;
 import com.schedule.domain.schedule.Schedule;
 import com.schedule.domain.schedule.ScheduleCategory;
 import com.schedule.domain.schedule.ScheduleStatus;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Builder
 public class ScheduleResponse {
 
     private Long id;

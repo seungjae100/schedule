@@ -48,6 +48,15 @@ public class ScheduleController {
         return ResponseEntity.ok().build();
     }
 
+    // 일정 전체 조회
+    @GetMapping("/all")
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedules(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = Long.parseLong(userDetails.getUsername());
+        return ResponseEntity.ok(scheduleService.getAllSchedules(userId));
+    }
+
     // 일정 상세 조회
     @GetMapping("/{scheduleId}")
     public ResponseEntity<ScheduleResponse> getSchedule(@PathVariable Long scheduleId) {
