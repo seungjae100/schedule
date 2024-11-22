@@ -17,7 +17,8 @@ public class ScheduleCreateRequest {
     private LocalDateTime endDate;
     private ScheduleCategory category;
 
-    @Builder
+    @Builde
+
     public ScheduleCreateRequest(String title, String description, LocalDateTime startDate, LocalDateTime endDate, ScheduleCategory category) {
         this.title = title;
         this.description = description;
