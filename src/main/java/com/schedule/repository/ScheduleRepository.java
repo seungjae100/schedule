@@ -39,15 +39,4 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
             @Param("user") User user,
             @Param("keyword") String keyword
     );
-
-    // 4. 알림이 필요한 일정 조회 (현재 시간 기준으로 곧 시작하는 일정)
-    @Query("SELECT s FROM Schedule s " +
-            "WHERE s.user = :user " +
-            "AND s.startDate BETWEEN :now AND :future " +
-            "AND s.status = 'RESERVED'")
-    List<Schedule> findUpcomingSchedules(
-            @Param("user") User user,
-            @Param("now") LocalDateTime now,
-            @Param("future") LocalDateTime future
-    );
 }
