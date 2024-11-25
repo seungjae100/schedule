@@ -39,12 +39,12 @@ public class UserServiceTest {
         request.setName("홍길동");
 
         // savedUser 준비 (DB 저장 후 반환될 User 엔티티)
-        User savedUser = new User();
-        savedUser.setId(1L);
-        savedUser.setEmail(request.getEmail());
-        savedUser.setPassword(request.getPassword());
-        savedUser.setName(request.getName());
-        savedUser.setRole(Role.USER);
+        User savedUser = User.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .name(request.getName())
+                .role(Role.USER)
+                .build();
 
         // userRepository 동작 정의
         when(userRepository.existsByEmail(any())).thenReturn(false); // 이메일 중복
@@ -98,12 +98,12 @@ public class UserServiceTest {
         request.setEmail("test@test.com");
         request.setPassword("qor1234567!");
 
-        User user = new User();
-        user.setId(1L);
-        user.setEmail("test@test.com");
-        user.setPassword("qor1234567!");
-        user.setName("테스터");
-        user.setRole(Role.USER);
+        User user = User.builder()
+                .email("test@test.com")
+                .password("qor1234567!")
+                .name("테스터")
+                .role(Role.USER)
+                .build();
 
         // userRepository 동작 정의
         when(userRepository.findByEmail(request.getEmail()))
@@ -148,9 +148,13 @@ public class UserServiceTest {
         request.setEmail("test@test.com");
         request.setPassword("tests1w123214");
 
-        User user = new User();
-        user.setEmail("test@test.com");
-        user.setPassword("qor1234567!");
+        User user = User.builder()
+                .email("test@test.com")
+                .password("qor1234567!")
+                .name("테스터")
+                .role(Role.USER)
+                .build();
+
 
         when(userRepository.findByEmail(request.getEmail()))
                 .thenReturn(Optional.of(user));

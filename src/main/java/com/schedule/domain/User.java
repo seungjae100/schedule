@@ -1,14 +1,11 @@
 package com.schedule.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
     @Id
@@ -27,5 +24,18 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role; // 권한 (관리자 , 일반)
+
+    @Builder
+    public User(String email, String password, String name, Role role) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.role = role;
+    }
+
+    public void updateUserInfo(String name, String password) {
+        this.name = name;
+        this.password = password;
+    }
 
 }
