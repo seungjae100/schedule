@@ -28,11 +28,12 @@ public class UserService {
         }
 
         // 새로운 회원 생성
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
-        user.setName(request.getName());
-        user.setRole(Role.USER);
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .name(request.getName())
+                .role(Role.USER)
+                .build();
 
         User savedUser = userRepository.save(user);
         return UserResponse.from(savedUser);
@@ -52,7 +53,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        user.setName(request.getName());
+        user.updateUserInfo(request.getName(), request.getPassword());
         return UserResponse.from(user);
     }
 
