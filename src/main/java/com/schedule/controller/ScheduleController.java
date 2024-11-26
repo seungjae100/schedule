@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RestControllerAdvice
+@RestController
 @RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
@@ -25,10 +25,8 @@ public class ScheduleController {
 
     // 일정 생성
     @PostMapping
-    public ResponseEntity<Long> createSchedule(@AuthenticationPrincipal UserDetails userDetails,
-                                               @RequestBody @Valid ScheduleCreateRequest request) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        Long scheduleId = scheduleService.createSchedule(userId, request);
+    public ResponseEntity<Long> createSchedule(@RequestBody @Valid ScheduleCreateRequest request) {
+        Long scheduleId = scheduleService.createSchedule(1L, request);
         return ResponseEntity.ok(scheduleId);
     }
 
@@ -50,11 +48,8 @@ public class ScheduleController {
 
     // 일정 전체 조회
     @GetMapping("/all")
-    public ResponseEntity<List<ScheduleResponse>> getAllSchedules(
-            @AuthenticationPrincipal UserDetails userDetails
-    ) {
-        Long userId = Long.parseLong(userDetails.getUsername());
-        return ResponseEntity.ok(scheduleService.getAllSchedules(userId));
+    public ResponseEntity<List<ScheduleResponse>> getAllSchedules() {
+        return ResponseEntity.ok(scheduleService.getAllSchedules(1L));
     }
 
     // 일정 상세 조회

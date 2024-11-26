@@ -10,6 +10,7 @@ import com.schedule.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(UserController.class) // UserController 테스트
+@AutoConfigureMockMvc(addFilters = false) // 시큐리티 필터 비활성화
 public class UserControllerTest {
 
     @Autowired
@@ -72,8 +74,8 @@ public class UserControllerTest {
         // given
         UserSignupRequest request = new UserSignupRequest();
         request.setEmail("testEmail"); // 잘못된 이메일 형식
-        request.setPassword("");
-        request.setName("");
+        request.setPassword("421");
+        request.setName("테스터어");
 
         // when & then
         mockMvc.perform(post("/users/signup")

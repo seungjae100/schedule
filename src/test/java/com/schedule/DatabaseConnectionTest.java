@@ -7,6 +7,7 @@ import com.schedule.domain.schedule.ScheduleCategory;
 import com.schedule.domain.schedule.ScheduleStatus;
 import com.schedule.repository.ScheduleRepository;
 import com.schedule.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,6 +24,13 @@ public class DatabaseConnectionTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @BeforeEach
+    void setUp() {
+        // 테스트 전에 기존 데이터 삭제
+        scheduleRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Test
     void connectionTest() {
