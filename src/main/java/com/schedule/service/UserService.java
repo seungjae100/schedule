@@ -8,7 +8,12 @@ import com.schedule.dto.request.UserUpdateRequest;
 import com.schedule.dto.response.UserLoginResponse;
 import com.schedule.dto.response.UserResponse;
 import com.schedule.repository.UserRepository;
+import com.schedule.security.jwt.service.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder; // 비밀번호 암호화
+    private final JwtService jwtService; // JWT 토큰 생성
+    private final AuthenticationManager authenticationManager; // 인증 관리자
 
     // 회원가입
     @Transactional // 쓰기 작업에는 @Transactional 사용
@@ -30,7 +38,7 @@ public class UserService {
         // 새로운 회원 생성
         User user = User.builder()
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(passwordEncoder.encode(request.getPassword())) // 비밀번호 암호화
                 .name(request.getName())
                 .role(Role.USER)
                 .build();
@@ -39,11 +47,11 @@ public class UserService {
         return UserResponse.from(savedUser);
     }
 
-    // 회원 조회
-    public UserResponse getUser(Long id) {
-        User user = userRepository.findById(id)
+    // 인증된 사용자 정보 조회
+    @Transactional(readOnly = true)
+    public UserResponse getCurrentUser(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-
         return UserResponse.from(user);
     }
 
@@ -53,7 +61,12 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        user.updateUserInfo(request.getName(), request.getPassword());
+        user.updateUserInfo(
+                request.getName(),
+                request.getPassword() != null ?
+                    passwordEncoder.encode(request.getPassword()) :
+                    user.getPassword()
+        ); // 비밀번호 암호화
         return UserResponse.from(user);
     }
 
@@ -67,16 +80,37 @@ public class UserService {
 
     // 로그인
     public UserLoginResponse login(UserLoginRequest request) {
-        // 1. 이메일로 사용자 찾기
+        // Spring Security
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        // 이메일로 사용자 찾기
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
 
-        // 2. 비밀번호 확인
-        if (!user.getPassword().equals(request.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        // JWT 토큰 생성
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        // 응답 반환
+        return UserLoginResponse.from(user, accessToken, refreshToken);
+    }
+
+    @Transactional
+    public UserLoginResponse token(String accessToken ,String refreshToken) {
+        String userEmail = jwtService.extractUsername(refreshToken);
+
+        if (!jwtService.isRefreshTokenValid(refreshToken)) {
+            throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        // 3. 로그인 성공 응답
-        return UserLoginResponse.from(user);
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        return UserLoginResponse.from(user, accessToken, refreshToken);
     }
 }

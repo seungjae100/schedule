@@ -112,7 +112,7 @@ public class UserServiceTest {
         // when
         UserLoginResponse response = userService.login(request);
 
-        //thenㅎ
+        //then
         assertNotNull(response);
         assertEquals("test@test.com", response.getEmail());
         assertEquals("테스터", response.getName());
