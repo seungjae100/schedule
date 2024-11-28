@@ -121,10 +121,11 @@ public class UserControllerTest {
         request.setEmail("test@test.com");
         request.setPassword("qor1234567!");
 
-        UserLoginResponse response = new UserLoginResponse();
-        response.setId(1L);
-        response.setEmail("test@test.com");
-        response.setName("테스터");
+        UserLoginResponse response = UserLoginResponse.builder()
+                .id(1L)
+                .email("test@test.com")
+                .name("테스터")
+                .build();
 
         when(userService.login(any(UserLoginRequest.class)))
                 .thenReturn(response);

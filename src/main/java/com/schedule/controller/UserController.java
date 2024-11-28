@@ -1,5 +1,6 @@
 package com.schedule.controller;
 
+import com.schedule.domain.User;
 import com.schedule.dto.request.UserLoginRequest;
 import com.schedule.dto.request.UserSignupRequest;
 import com.schedule.dto.request.UserUpdateRequest;
@@ -9,6 +10,7 @@ import com.schedule.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -30,14 +32,14 @@ public class UserController {
     }
 
     // 회원 정보 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable Long id) {
-        UserResponse response = userService.getUser(id);
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal User user) {
+        UserResponse response = userService.getCurrentUser(user.getEmail());
         return ResponseEntity.ok(response);
     }
 
     // 회원 정보 수정
-    @PutMapping("/{id}")
+    @PutMapping("/me")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateRequest request) {
@@ -46,7 +48,7 @@ public class UserController {
     }
 
     // 회원 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/me")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
@@ -58,4 +60,14 @@ public class UserController {
         UserLoginResponse response = userService.login(request);
         return ResponseEntity.ok(response);
     }
+
+    // 토큰 검증
+    @PostMapping("/token")
+    public  ResponseEntity<UserLoginResponse> token(
+            @RequestHeader("Authorization") String accessToken,
+            @RequestHeader("Refresh-Token") String refreshToken) {
+        UserLoginResponse response = userService.token(accessToken, refreshToken);
+        return ResponseEntity.ok(response);
+    }
+
 }
