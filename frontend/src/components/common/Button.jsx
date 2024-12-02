@@ -4,9 +4,9 @@ const StyledButton = styled.button`
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 500;
-    width: ${props => props.fullWidth ? '100%' : 'auto'};
-    
-    ${props => props.variant === 'primary' && `
+    width: ${props => props.$fullWidth ? '100%' : 'auto'};
+
+    ${props => props.$variant === 'primary' && `
     background-color: #3b82f6;
     color: white;
     &:hover {
@@ -14,7 +14,7 @@ const StyledButton = styled.button`
     }
   `}
 
-  ${props => props.variant === 'secondary' && `
+  ${props => props.$variant === 'secondary' && `
     background-color: #e5e7eb;
     color: #1f2937;
     &:hover {
@@ -23,8 +23,8 @@ const StyledButton = styled.button`
   `}
 `;
 
-const Button = ({ children, ...props }) => {
-    return <StyledButton {...props}>{children}</StyledButton>;
+const Button = ({ children, fullWidth, variant, ...props }) => {
+    return <StyledButton $variant={variant} $fullWidth={fullWidth} {...props}>{children}</StyledButton>;
 };
 
 export default Button;
