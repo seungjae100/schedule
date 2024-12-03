@@ -13,6 +13,10 @@ export const getRefreshToken = () => {
     return localStorage.getItem('refreshToken');
 };
 
+export const isAuthenticated = () => {
+    return !! memoryAccessToken && !! localStorage.getItem('refreshToken');
+}
+
 export const removeTokens = () => {
     memoryAccessToken = null;
     localStorage.removeItem('refreshToken');
