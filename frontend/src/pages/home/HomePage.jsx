@@ -1,7 +1,7 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
-import {getAccessToken} from "../../utils/token";
+import {getAccessToken, removeTokens} from "../../utils/token";
 import Button from "../../components/common/Button";
 import {logout} from "../../api/user";
 
@@ -49,15 +49,30 @@ const StyledButton = styled(Button)`
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const isAuthenticated = !!getAccessToken();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const token = getAccessToken();
+        if (token) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+    }, []);
 
     const handleEnterClick = () => {
         navigate('/schedules');
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate('/users/login');
+    const handleLogout = async () => {
+        try {
+            await logout();
+            removeTokens();
+            setIsAuthenticated(false);
+            navigate('/users/login');
+        } catch (error) {
+            console.error('로그아웃 실패: ', error);
+        }
     };
 
     return (

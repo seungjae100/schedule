@@ -11,7 +11,11 @@ const client = axios.create({
 
 client.interceptors.request.use((config) => {
     const token = getAccessToken();
+    console.log('Current token:', token); // 토큰이 있는지 확인
+
     if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -21,8 +25,10 @@ client.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            removeTokens();
-            window.location.href = '/users/login';
+            if (!window.location.pathname.includes('/users/login')) {
+                removeTokens();
+                window.location.href = '/users/login';
+            }
         }
         return Promise.reject(error);
     }
