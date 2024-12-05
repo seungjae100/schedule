@@ -320,12 +320,14 @@ const SchedulePage = () => {
             const scheduleData = {
                 title: arg.event.title || '새 일정',
                 startDate: arg.event.start,
-                endDate: arg.event.endDate,
+                endDate: arg.event.end,
                 description: arg.event.extendedProps?.description || '',
                 category: arg.event.extendedProps?.category || 'WORK',
                 status: 'RESERVED'
             };
             await createSchedule(scheduleData);
+            const updatedData = await getAllSchedules();
+            setEvents(updatedData);
         } catch (error) {
             console.error('일정 생성 실패 : ', error);
             arg.revert();

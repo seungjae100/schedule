@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
+        final String refreshToken = request.getHeader("refreshToken");
         final String jwt;
         final String userEmail;
 
@@ -45,7 +46,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+                // 엑서스 토큰이 만료되었지만 리프레시 토큰이 유효한 경우
+                if (!jwtService.isTokenValid(jwt, userDetails) &&
+                    refreshToken != null &&
+                    jwtService.isRefreshTokenValid(refreshToken)) {
+
+                    // 새로운 엑서스 토큰 발급
+                    String newAccessToken = jwtService.generateToken(userDetails);
+                    response.setHeader("New-Access-Token", newAccessToken);
+                }
+                    // 엑시스 토큰이 유효한 경우
+                    else if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

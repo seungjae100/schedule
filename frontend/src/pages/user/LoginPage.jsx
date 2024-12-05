@@ -64,9 +64,12 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await login(formData);
+            const response = await login(formData);  // login 함수 내부에서 토큰 저장 처리
+
+            // 로그인 성공 시 페이지 이동만 처리
             navigate('/schedules');
         } catch (error) {
+            console.error('Login error:', error);
             setError('로그인에 실패했습니다.');
         }
     };

@@ -1,12 +1,11 @@
-let memoryAccessToken = null; // access 토큰은 메로리에 저장
 
 export const setTokens = (accessToken, refreshToken) => {
-    memoryAccessToken = accessToken; // accessToken 메모리에 저장
+     sessionStorage.setItem('accessToken', accessToken); // access토큰은 세션스토리지에 저장
     localStorage.setItem('refreshToken', refreshToken) // refresh 토큰은 로컬스토리지에 저장
 };
 
 export const getAccessToken = () => {
-    return memoryAccessToken;
+    return sessionStorage.getItem('accessToken');
 };
 
 export const getRefreshToken = () => {
@@ -14,10 +13,10 @@ export const getRefreshToken = () => {
 };
 
 export const isAuthenticated = () => {
-    return !! memoryAccessToken && !! localStorage.getItem('refreshToken');
+    return !! sessionStorage.getItem('accessToken') && !! localStorage.getItem('refreshToken');
 }
 
 export const removeTokens = () => {
-    memoryAccessToken = null;
+    sessionStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
 };

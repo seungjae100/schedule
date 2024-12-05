@@ -49,15 +49,13 @@ const StyledButton = styled(Button)`
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuth, setIsAuth] = useState(false);
 
     useEffect(() => {
-        const token = getAccessToken();
-        if (token) {
-            setIsAuthenticated(true);
-        } else {
-            setIsAuthenticated(false);
-        }
+        const accessToken = sessionStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+
+        setIsAuth(!!accessToken && !!refreshToken);
     }, []);
 
     const handleEnterClick = () => {
@@ -68,7 +66,7 @@ const HomePage = () => {
         try {
             await logout();
             removeTokens();
-            setIsAuthenticated(false);
+            setIsAuth(false);
             navigate('/users/login');
         } catch (error) {
             console.error('로그아웃 실패: ', error);
@@ -83,7 +81,7 @@ const HomePage = () => {
                 당신의 소중한 시간을 더 가치있게
             </Description>
             <ButtonGroup>
-                {isAuthenticated ? (
+                {isAuth ? (
                     <>
                         <StyledButton variant="primary" onClick={handleEnterClick}>
                             입장하기
