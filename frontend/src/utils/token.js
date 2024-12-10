@@ -13,7 +13,7 @@ export const getRefreshToken = () => {
 };
 
 export const isAuthenticated = () => {
-    return !! sessionStorage.getItem('accessToken') && !! localStorage.getItem('refreshToken');
+    return !!sessionStorage.getItem('accessToken') && !!localStorage.getItem('refreshToken');
 }
 
 export const removeTokens = () => {

@@ -1,51 +1,14 @@
 import React, {useEffect, useState} from "react";
-import styled from "styled-components";
 import {useNavigate} from "react-router-dom";
-import {getAccessToken, removeTokens} from "../../utils/token";
-import Button from "../../components/common/Button";
+import {removeTokens} from "../../utils/token";
 import {logout} from "../../api/user";
-
-const Container = styled.div`
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: #f9fafb;
-`;
-
-const Logo = styled.div`
-    font-size: 3rem;
-    font-weight: bold;
-    color: #3b82f6;
-    margin-bottom: 1.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const Description = styled.p`
-    font-size: 1.2rem;
-    color: #6b7280;
-    margin-bottom: 3rem;
-    text-align: center;
-    line-height: 1.8;
-`;
-
-const ButtonGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 200px;
-`;
-
-const StyledButton = styled(Button)`
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    transition: transform 0.2s;
-    
-    &:hover {
-        transform: translateY(-2px);
-    }
-`;
+import {
+    Container,
+    Logo,
+    Description,
+    ButtonGroup,
+    StyledButton
+} from "../../styles/layouts/HomeLayout.styles";
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -54,7 +17,6 @@ const HomePage = () => {
     useEffect(() => {
         const accessToken = sessionStorage.getItem('accessToken');
         const refreshToken = localStorage.getItem('refreshToken');
-
         setIsAuth(!!accessToken && !!refreshToken);
     }, []);
 
