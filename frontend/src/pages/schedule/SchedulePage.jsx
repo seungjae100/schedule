@@ -11,25 +11,33 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CreateScheduleModal from "../../components/schedule/CreateScheduleModal";
 import ViewScheduleModal from "../../components/schedule/ViewScheduleModal";
+import ModifyScheduleModal from "../../components/schedule/ModifyScheduleModal";
 
 const SchedulePage = () => {
     const navigate = useNavigate();
     const {
         events,
-        isModalOpen,
+        // 생성 모달 관련
+        isCreateModalOpen, // isModalOpen -> isCreateModalOpen으로 수정
+        newEvent,
+        setNewEvent,
+        handleOpenCreateModal, // handleOpenModal -> handleOpenCreateModal로 수정
+        handleCloseCreateModal, // handleCloseModal -> handleCloseCreateModal로 수정
+        handleCreateSubmit, // handleSubmitEvent -> handleCreateSubmit으로 수정
+        // 조회 모달 관련
         isViewModalOpen,
         setIsViewModalOpen,
         selectedEvent,
-        newEvent,
-        setNewEvent,
-        handleOpenModal,
-        handleCloseModal,
         handleEventClick,
-        handleEditEvent,
         handleDeleteEvent,
-        handleSubmitEvent,
-        handleScheduleAdd,
-        handleScheduleChange,
+        // 수정 모달 관련
+        isModifyModalOpen,
+        modifyEvent,        // 추가
+        setModifyEvent,     // 추가
+        handleOpenModifyModal,
+        handleCloseModifyModal,
+        handleModifySubmit,
+        // 기타
         handleDatesSet,
         fetchAndFormatEvents
     } = useSchedule();
@@ -52,7 +60,7 @@ const SchedulePage = () => {
                             <Home size={18} />
                             홈으로
                         </IconButton>
-                        <IconButton onClick={handleOpenModal}>
+                        <IconButton onClick={handleOpenCreateModal}>
                             <Plus size={18} />
                             새 일정
                         </IconButton>
@@ -68,34 +76,38 @@ const SchedulePage = () => {
                             center: 'title',
                             right: 'dayGridMonth,timeGridWeek,timeGridDay'
                         }}
-                        editable={true}
-                        selectable={true}
-                        selectMirror={true}
+
                         dayMaxEvents={true}
                         events={events}
-                        eventAdd={handleScheduleAdd}
-                        eventChange={handleScheduleChange}
                         eventClick={handleEventClick}
                         datesSet={handleDatesSet}
                         locale="ko"
                     />
                 </ContentContainer>
 
-                <CreateScheduleModal
-                    isOpen={isModalOpen}
-                    onClose={handleCloseModal}
-                    onSubmit={handleSubmitEvent}
-                    newEvent={newEvent}
-                    setNewEvent={setNewEvent}
-                />
+            <CreateScheduleModal
+                isOpen={isCreateModalOpen}
+                onClose={handleCloseCreateModal}
+                onSubmit={handleCreateSubmit}
+                newEvent={newEvent}
+                setNewEvent={setNewEvent}
+            />
 
-                <ViewScheduleModal
-                    isOpen={isViewModalOpen}
-                    onClose={() => setIsViewModalOpen(false)}
-                    event={selectedEvent}
-                    onEdit={handleEditEvent}
-                    onDelete={handleDeleteEvent}
-                />
+            <ViewScheduleModal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                event={selectedEvent}
+                onEdit={handleOpenModifyModal}
+                onDelete={handleDeleteEvent}
+            />
+
+            <ModifyScheduleModal
+                isOpen={isModifyModalOpen}
+                onClose={handleCloseModifyModal}
+                onSubmit={handleModifySubmit}
+                modifyEvent={modifyEvent}
+                setModifyEvent={setModifyEvent}
+            />
         </PageContainer>
     );
 };

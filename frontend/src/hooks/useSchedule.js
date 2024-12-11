@@ -18,10 +18,11 @@ const formatEventData = (event) => ({
 });
 
 export const useSchedule = () => {
+    // 캘린더 이벤트 상태
     const [events, setEvents] =useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState(null);
+
+    // 생성 모달 관련 상태
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newEvent, setNewEvent] = useState({
         title: '',
         startDate: '',
@@ -30,10 +31,25 @@ export const useSchedule = () => {
         category: Object.keys(SCHEDULE_CATEGORIES)[0]
     });
 
-    const formatDateForInput = (date) => {
-        return date.toISOString().slice(0, 16);
-    };
+    // 조회 모달 관련 상태
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState(null);
 
+    // 수정 모달 관련 상태
+    const [isModifyModalOpen, setIsModifyModalOpen] = useState(false);
+    const [modifyEvent, setModifyEvent] = useState({
+        id: null,
+        title: '',
+        startDate: '',
+        endDate: '',
+        description: '',
+        category: Object.keys(SCHEDULE_CATEGORIES)[0]
+    });
+
+    // 날짜 포맷 함수
+    const formatDateForInput = (date) => date.toISOString().slice(0, 16);
+
+    // 일정 데이터 조회
     const fetchAndFormatEvents = async () => {
         try {
             const data = await getAllSchedules();
@@ -44,21 +60,89 @@ export const useSchedule = () => {
         }
     };
 
+    // 생성 모달 핸들러
+    const handleOpenCreateModal = () => {
+        const now = new Date();
+        setNewEvent({
+            title: '',
+            startDate: formatDateForInput(now),
+            endDate: formatDateForInput(new Date(now.getTime() + 60 * 60 * 1000)),
+            description: '',
+            category: Object.keys(SCHEDULE_CATEGORIES)[0]
+        });
+        setIsCreateModalOpen(true);
+    };
+
+    const handleCloseCreateModal = () => {
+        setIsCreateModalOpen(false);
+        setNewEvent({
+            title: '',
+            startDate: '',
+            endDate: '',
+            description: '',
+            category: Object.keys(SCHEDULE_CATEGORIES)[0]
+        });
+    };
+
+    const handleCreateSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const now = new Date().toISOString();
+            await createSchedule({
+                ...newEvent,
+                created_at: now,
+                modified_at: null
+            });
+            handleCloseCreateModal();
+            await fetchAndFormatEvents();
+        } catch (error) {
+            console.error('일정 생성 실패: ', error);
+        }
+    };
+
+    // 일정 조회/수정/삭제 핸들러
     const handleEventClick = (arg) => {
         setSelectedEvent(arg.event);
         setIsViewModalOpen(true);
     };
 
-    const handleEditEvent = (event) => {
+    const handleOpenModifyModal = (event) => {
         setIsViewModalOpen(false);
-        setNewEvent({
+        setModifyEvent({
+            id: event.id,
             title: event.title,
             startDate: event.start,
             endDate: event.end,
-            description: event.description,
-            category: event.category
+            description: event.extendedProps?.description || '',
+            category: event.extendedProps?.category
         });
-        setIsModalOpen(true);
+        setIsModifyModalOpen(true);
+    };
+
+    const handleCloseModifyModal = () => {
+        setIsModifyModalOpen(false);
+        setModifyEvent({
+            id: null,
+            title: '',
+            startDate: '',
+            endDate: '',
+            description: '',
+            category: Object.keys(SCHEDULE_CATEGORIES)[0]
+        });
+    };
+
+    const handleModifySubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await updateSchedule(modifyEvent.id, {
+                ...modifyEvent,
+                modified_at: new Date().toISOString()
+            });
+            handleCloseModifyModal();
+            await fetchAndFormatEvents();
+        } catch (error) {
+            console.error('일정 수정 실패: ', error);
+        }
     };
 
     const handleDeleteEvent = async (event) => {
@@ -71,74 +155,7 @@ export const useSchedule = () => {
         }
     };
 
-    const handleOpenModal = () => {
-        const now = new Date();
-        setNewEvent({
-            title: '',
-            startDate: formatDateForInput(now),
-            endDate: formatDateForInput(new Date(now.getTime() + 60 * 60 * 1000)),
-            description: '',
-            category: Object.keys(SCHEDULE_CATEGORIES)[0]
-        });
-        setIsModalOpen(true);
-    };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-        setNewEvent({
-            title: '',
-            startDate: '',
-            endDate: '',
-            description: '',
-            category: Object.keys(SCHEDULE_CATEGORIES)[0]
-        });
-    };
-
-    const handleSubmitEvent = async (e) => {
-        e.preventDefault();
-        try {
-            await createSchedule(newEvent);
-            handleCloseModal();
-            await fetchAndFormatEvents();
-        } catch (error) {
-            console.error('일정 생성 실패: ', error);
-        }
-    };
-
-    const handleScheduleAdd = async (arg) => {
-        try {
-            const scheduleData = {
-                title: arg.event.title || '새 일정',
-                startDate: arg.event.start,
-                endDate: arg.event.end,
-                description: arg.event.extendedProps?.description || '',
-                category: arg.event.extendedProps?.category || Object.keys(SCHEDULE_CATEGORIES)[0],
-                status: 'RESERVED'
-            };
-            await createSchedule(scheduleData);
-            await fetchAndFormatEvents();
-        } catch (error) {
-            console.error('일정 생성 실패: ', error);
-            arg.revert();
-        }
-    };
-
-    const handleScheduleChange = async (arg) => {
-        try {
-            const scheduleData = {
-                title: arg.event.title,
-                startDate: arg.event.start,
-                endDate: arg.event.end,
-                description: arg.event.extendedProps?.description,
-                category: arg.event.extendedProps?.category
-            };
-            await updateSchedule(arg.event.id, scheduleData);
-            await fetchAndFormatEvents();
-        } catch (error) {
-            console.error('일정 수정 실패: ', error);
-            arg.revert();
-        }
-    };
 
     const handleDatesSet = async (arg) => {
         try {
@@ -152,21 +169,29 @@ export const useSchedule = () => {
 
     return {
         events,
-        isModalOpen,
+        // 생성 모달 관련
+        isCreateModalOpen,
+        newEvent,
+        setNewEvent,
+        handleOpenCreateModal,
+        handleCloseCreateModal,
+        handleCreateSubmit,
+        // 조회 모달 관련
         isViewModalOpen,
         setIsViewModalOpen,
         selectedEvent,
-        newEvent,
-        setNewEvent,
-        handleOpenModal,
-        handleCloseModal,
         handleEventClick,
-        handleEditEvent,
         handleDeleteEvent,
-        handleSubmitEvent,
-        handleScheduleAdd,
-        handleScheduleChange,
+        // 수정 모달 관련
+        isModifyModalOpen,
+        modifyEvent,
+        setModifyEvent,
+        handleOpenModifyModal,
+        handleCloseModifyModal,
+        handleModifySubmit,
+        // 캘린더 이벤트 핸들러
         handleDatesSet,
+        // 기타
         fetchAndFormatEvents
     };
 };

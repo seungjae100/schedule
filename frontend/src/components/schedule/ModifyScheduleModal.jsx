@@ -1,25 +1,21 @@
-import React from "react";
-import Button from "../common/Button";
-import Input from "../common/Input";
-import {
-    ModalOverlay,
-    ModalContainer as ScheduleModal
-} from '../../styles/components/Modal.styles';
-import {
-    Form as ModalForm,
-    FormGroup,
-    TextArea,
-    Select
-} from '../../styles/components/Form.styles';
-import { ModalButtons } from '../../styles/components/Modal.styles';
-import {SCHEDULE_CATEGORIES} from "../../constants/scheduleConstants";
 
-const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent }) => {
-    if (!isOpen) return null;
+import {Form as ModalForm,FormGroup, Select, TextArea} from "../../styles/components/Form.styles";
+import React from "react";
+import Input from "../common/Input";
+import {SCHEDULE_CATEGORIES} from "../../constants/scheduleConstants";
+import Button from "../common/Button";
+import {ModalOverlay, ModalContainer as ScheduleModal, ModalButtons} from "../../styles/components/Modal.styles";
+
+const ModifyScheduleModal = ({ isOpen,
+                                 onClose,
+                                 onSubmit,
+                                 modifyEvent,
+                                 setModifyEvent  }) => {
+    if(!isOpen) return null;
 
     const handleCategoryChange = (e) => {
-        setNewEvent({
-            ...newEvent,
+        setModifyEvent({
+            ...modifyEvent,
             category: e.target.value
         });
     };
@@ -33,15 +29,15 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
                         <label>제목</label>
                         <Input
                             type="text"
-                            value={newEvent.title}
-                            onChange={(e) => setNewEvent({...newEvent, title: e.target.value})}
+                            value={modifyEvent.title}
+                            onChange={(e) => setModifyEvent({...modifyEvent, title:e.target.value})}
                             required
                         />
                     </FormGroup>
                     <FormGroup>
                         <label>카테고리</label>
                         <Select
-                            value={newEvent.category}
+                            value={modifyEvent.category}
                             onChange={handleCategoryChange}
                             required
                         >
@@ -49,15 +45,15 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
                                 <option key={category.value} value={category.value}>
                                     {category.label}
                                 </option>
-                            ))}
+                                ))}
                         </Select>
                     </FormGroup>
                     <FormGroup>
                         <label>시작 일시</label>
                         <Input
                             type="datetime-local"
-                            value={newEvent.startDate}
-                            onChange={(e) => setNewEvent({...newEvent, startDate: e.target.value})}
+                            value={modifyEvent.startDate}
+                            onChange={(e) => setModifyEvent({...modifyEvent, startDate: e.target.value})}
                             required
                         />
                     </FormGroup>
@@ -65,16 +61,16 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
                         <label>종료 일시</label>
                         <Input
                             type="datetime-local"
-                            value={newEvent.endDate}
-                            onChange={(e) => setNewEvent({...newEvent, endDate: e.target.value})}
+                            value={modifyEvent.endDate}
+                            onChange={(e) => setModifyEvent({...modifyEvent, endDate: e.target.value})}
                             required
                         />
                     </FormGroup>
                     <FormGroup>
                         <label>설명</label>
                         <TextArea
-                            value={newEvent.description}
-                            onChange={(e) => setNewEvent({...newEvent, description: e.target.value})}
+                            value={modifyEvent.description}
+                            onChange={(e) => setModifyEvent({...modifyEvent, description: e.target.value})}
                         />
                     </FormGroup>
                     <ModalButtons>
@@ -82,7 +78,7 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
                             취소
                         </Button>
                         <Button type="submit" variant="primary">
-                            저장
+                            수정
                         </Button>
                     </ModalButtons>
                 </ModalForm>
@@ -91,4 +87,4 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
     );
 };
 
-export default CreateScheduleModal;
+export default ModifyScheduleModal;
