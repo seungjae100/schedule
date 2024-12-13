@@ -19,5 +19,6 @@ public abstract class BaseTimeEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(insertable = false) // 최초 생성시에는 null, 수정 시 최신 시간으로 업데이트
     private LocalDateTime modifiedAt;
 }

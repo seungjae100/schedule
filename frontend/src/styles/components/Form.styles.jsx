@@ -12,12 +12,6 @@ export const FormGroup = styled.div`
     gap: 0.5rem;
 `;
 
-export const Input = styled.input`
-    padding: 0.5rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.375rem;
-`;
-
 export const TextArea = styled.textarea`
     padding: 0.5rem;
     border: 1px solid #e2e8f0;

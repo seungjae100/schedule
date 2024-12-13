@@ -75,6 +75,7 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getScheduleByPeriod(userDetails, startDate, endDate));
     }
 
+    // 일정 검색
     @GetMapping("/search")
     public ResponseEntity<List<ScheduleResponse>> searchSchedules(
             @AuthenticationPrincipal UserDetails userDetails,

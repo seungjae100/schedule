@@ -21,25 +21,3 @@ export const IconButton = styled.button`
         background-color: #f7fafc;
     }
 `;
-
-export const Button = styled.button`
-    padding: 0.5rem 1rem;
-    border-radius: 0.375rem;
-    border: none;
-    cursor: pointer;
-    
-    &.primary {
-        background-color: #4299e1;
-        color: white;
-    }
-    
-    &.secondary {
-        background-color: #e2e8f0;
-        color: #4a5568;
-    }
-
-    &.danger {
-        background-color: #e53e3e;
-        color: white;
-    }
-`;

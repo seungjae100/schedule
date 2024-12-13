@@ -1,10 +1,9 @@
 import {useNavigate} from "react-router-dom";
 import {useSchedule} from "../../hooks/useSchedule";
-import React, {useEffect} from "react";
-import {GlobalCalendarStyle, Header, HeaderTitle, PageContainer} from "../../styles/layouts/PageLayout.styles";
+import React, {useEffect, useState} from "react";
 import {ButtonGroup, IconButton} from "../../styles/components/Common.styles";
-import {Home, Plus} from "lucide-react";
-import {ContentContainer} from "../../styles/layouts/PageLayout.styles";
+import {Home} from "lucide-react";
+
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -12,18 +11,26 @@ import interactionPlugin from '@fullcalendar/interaction';
 import CreateScheduleModal from "../../components/schedule/CreateScheduleModal";
 import ViewScheduleModal from "../../components/schedule/ViewScheduleModal";
 import ModifyScheduleModal from "../../components/schedule/ModifyScheduleModal";
+import ScheduleSearch from "../../components/schedule/ScheduleSearch";
+import ProfileMenu from "../../components/schedule/ProfileMenu";
+import ScheduleFilter from "../../components/schedule/ScheduleFilter";
+
 
 const SchedulePage = () => {
     const navigate = useNavigate();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("");
+
     const {
         events,
         // 생성 모달 관련
-        isCreateModalOpen, // isModalOpen -> isCreateModalOpen으로 수정
+        isCreateModalOpen,
         newEvent,
         setNewEvent,
-        handleOpenCreateModal, // handleOpenModal -> handleOpenCreateModal로 수정
-        handleCloseCreateModal, // handleCloseModal -> handleCloseCreateModal로 수정
-        handleCreateSubmit, // handleSubmitEvent -> handleCreateSubmit으로 수정
+        handleOpenCreateModal,
+        handleCloseCreateModal,
+        handleCreateSubmit,
         // 조회 모달 관련
         isViewModalOpen,
         setIsViewModalOpen,
@@ -32,58 +39,81 @@ const SchedulePage = () => {
         handleDeleteEvent,
         // 수정 모달 관련
         isModifyModalOpen,
-        modifyEvent,        // 추가
-        setModifyEvent,     // 추가
+        modifyEvent,
+        setModifyEvent,
         handleOpenModifyModal,
         handleCloseModifyModal,
         handleModifySubmit,
         // 기타
         handleDatesSet,
-        fetchAndFormatEvents
+        fetchAndFormatEvents,
+        searchSchedules
     } = useSchedule();
 
     useEffect(() => {
         fetchAndFormatEvents();
     }, []);
 
-    const handleNavigateHome = () => {
-        navigate('/');
-    };
-
     return (
         <PageContainer>
             <GlobalCalendarStyle/>
-                <Header>
+            {/* 메인 헤더 */}
+            <Header>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <HeaderTitle>캘린더</HeaderTitle>
-                    <ButtonGroup>
-                        <IconButton onClick={handleNavigateHome}>
-                            <Home size={18} />
-                            홈으로
-                        </IconButton>
-                        <IconButton onClick={handleOpenCreateModal}>
-                            <Plus size={18} />
-                            새 일정
-                        </IconButton>
-                    </ButtonGroup>
-                </Header>
+                    <ScheduleSearch
+                        searchKeyword={searchKeyword}
+                        setSearchKeyword={setSearchKeyword}
+                        onSearch={searchSchedules}
+                    />
+                </div>
+                <ButtonGroup>
+                    <IconButton onClick={() => navigate('/')}>
+                        <Home size={20} />
+                        홈으로
+                    </IconButton>
+                    <ProfileMenu
+                        isOpen={isProfileOpen}
+                        onToggle={() => setIsProfileOpen(!isProfileOpen)}
+                    />
+                </ButtonGroup>
+            </Header>
 
-                <ContentContainer>
+            {/* 캘린더 바디 */}
+            <ContentContainer>
+                <div style={{ position: 'relative' }}>
                     <FullCalendar
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                         initialView="dayGridMonth"
                         headerToolbar={{
                             left: 'prev,next today',
                             center: 'title',
-                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                            right: 'newSchedule dayGridMonth,timeGridWeek,timeGridDay'
                         }}
-
+                        customButtons={{
+                            newSchedule: {
+                                text: '새 일정',
+                                click: handleOpenCreateModal
+                            }
+                        }}
                         dayMaxEvents={true}
                         events={events}
                         eventClick={handleEventClick}
                         datesSet={handleDatesSet}
                         locale="ko"
                     />
-                </ContentContainer>
+                    <div style={{
+                        position: 'absolute',
+                        top: '8px',
+                        left: '180px'  // today 버튼 우측에 위치하도록 조정
+                    }}>
+                        <ScheduleFilter
+                            selectedCategory={selectedCategory}
+                            onCategoryChange={setSelectedCategory}
+                        />
+                    </div>
+                </div>
+            </ContentContainer>
 
             <CreateScheduleModal
                 isOpen={isCreateModalOpen}
