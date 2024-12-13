@@ -13,7 +13,7 @@ const formatEventData = (event) => ({
     borderColor: CATEGORY_COLORS[event.category],
     extendedProps: {
         description: event.description,
-        category: event.category
+        category: event.category,
     }
 });
 
@@ -47,7 +47,13 @@ export const useSchedule = () => {
     });
 
     // 날짜 포맷 함수
-    const formatDateForInput = (date) => date.toISOString().slice(0, 16);
+    const formatDateForInput = (date) => {
+        if (!date) return ''; // 날짜가 없는 경우 처리
+
+        // 문자열이나 다른 형식의 날짜를 Date 객체로 변환
+        const dateObject = new Date(date);
+        return dateObject.toISOString().slice(0, 16);
+    };
 
     // 일정 데이터 조회
     const fetchAndFormatEvents = async () => {
@@ -87,12 +93,7 @@ export const useSchedule = () => {
     const handleCreateSubmit = async (e) => {
         e.preventDefault();
         try {
-            const now = new Date().toISOString();
-            await createSchedule({
-                ...newEvent,
-                created_at: now,
-                modified_at: null
-            });
+            await createSchedule(newEvent);
             handleCloseCreateModal();
             await fetchAndFormatEvents();
         } catch (error) {
@@ -111,10 +112,10 @@ export const useSchedule = () => {
         setModifyEvent({
             id: event.id,
             title: event.title,
-            startDate: event.start,
-            endDate: event.end,
+            startDate: formatDateForInput(event.start || event.startDate),
+            endDate: formatDateForInput(event.end || event.endDate),
             description: event.extendedProps?.description || '',
-            category: event.extendedProps?.category
+            category: event.extendedProps?.category || Object.keys(SCHEDULE_CATEGORIES)[0],
         });
         setIsModifyModalOpen(true);
     };
@@ -135,11 +136,14 @@ export const useSchedule = () => {
         e.preventDefault();
         try {
             await updateSchedule(modifyEvent.id, {
-                ...modifyEvent,
-                modified_at: new Date().toISOString()
+                title: modifyEvent.title,
+                startDate: new Date(modifyEvent.startDate).toISOString(),
+                endDate: new Date(modifyEvent.endDate).toISOString(),
+                description: modifyEvent.description,
+                category: modifyEvent.category,
             });
             handleCloseModifyModal();
-            await fetchAndFormatEvents();
+            await fetchAndFormatEvents(); // 수정 후 일정 갱신
         } catch (error) {
             console.error('일정 수정 실패: ', error);
         }

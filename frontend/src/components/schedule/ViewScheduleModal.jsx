@@ -9,11 +9,25 @@ const ViewScheduleModal = ({ isOpen, onClose, event, onEdit, onDelete}) => {
 
     // 카테고리를 안전하게 가져오는 함수
     const getCategoryLabel = () => {
-        if (!event.extendedProps?.category || ! SCHEDULE_CATEGORIES[event.extendedProps]) {
+        if (!event.extendedProps?.category || ! SCHEDULE_CATEGORIES[event.extendedProps.category]) {
             return '알 수 없음';
         }
-        return SCHEDULE_CATEGORIES[event.extendedProps].label;
+        return SCHEDULE_CATEGORIES[event.extendedProps.category].label;
     };
+
+    // 삭제 전 검증
+    const handleDelete = () => {
+        if (!event?.id) {
+            console.error('유효하지 않은 아이디입니다.', event);
+            return;
+        }
+        onDelete(event);
+    };
+
+    // 수정 버튼 핸들러
+    const handleEdit = () => {
+        onEdit(event);
+    }
 
     return (
         <>
@@ -21,14 +35,14 @@ const ViewScheduleModal = ({ isOpen, onClose, event, onEdit, onDelete}) => {
             <ScheduleModal>
                 <ModalTitle>{event.title}</ModalTitle>
                 <ModalContent>
-                    <ModalText>카테고리: {SCHEDULE_CATEGORIES[event.extendedProps?.category]?.label || '알 수 없음'}</ModalText>
+                    <ModalText>카테고리: {getCategoryLabel()}</ModalText>
                     <ModalText>시작: {new Date(event.start).toLocaleString()}</ModalText>
                     <ModalText>종료: {new Date(event.end).toLocaleString()}</ModalText>
                     <ModalText>설명: {event.extendedProps?.description || ''}</ModalText>
                 </ModalContent>
                 <ModalButtons>
-                    <Button variant="secondary" onClick={onEdit}>수정</Button>
-                    <Button variant="danger" onClick={onDelete}>삭제</Button>
+                    <Button variant="secondary" onClick={handleEdit}>수정</Button>
+                    <Button variant="danger" onClick={handleDelete}>삭제</Button>
                     <Button variant="primary" onClick={onClose}>닫기</Button>
                 </ModalButtons>
             </ScheduleModal>

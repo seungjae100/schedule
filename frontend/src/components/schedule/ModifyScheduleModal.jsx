@@ -35,20 +35,6 @@ const ModifyScheduleModal = ({ isOpen,
                         />
                     </FormGroup>
                     <FormGroup>
-                        <label>카테고리</label>
-                        <Select
-                            value={modifyEvent.category}
-                            onChange={handleCategoryChange}
-                            required
-                        >
-                            {Object.values(SCHEDULE_CATEGORIES).map(category => (
-                                <option key={category.value} value={category.value}>
-                                    {category.label}
-                                </option>
-                                ))}
-                        </Select>
-                    </FormGroup>
-                    <FormGroup>
                         <label>시작 일시</label>
                         <Input
                             type="datetime-local"
@@ -72,6 +58,20 @@ const ModifyScheduleModal = ({ isOpen,
                             value={modifyEvent.description}
                             onChange={(e) => setModifyEvent({...modifyEvent, description: e.target.value})}
                         />
+                    </FormGroup>
+                    <FormGroup>
+                        <label>카테고리</label>
+                        <Select
+                            value={modifyEvent.category || 'WORK'}
+                            onChange={handleCategoryChange}
+                            required
+                        >
+                            {Object.values(SCHEDULE_CATEGORIES).map((category) => (
+                                <option key={category.value} value={category.value}>
+                                    {category.label}
+                                </option>
+                            ))}
+                        </Select>
                     </FormGroup>
                     <ModalButtons>
                         <Button type="button" variant="secondary" onClick={onClose}>
