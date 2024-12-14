@@ -1,6 +1,7 @@
 import {IconButton} from "../../styles/components/Common.styles";
 import {ChevronDown, User} from "lucide-react";
-import {DropdownItem, ProfileDropdown} from "../../styles/components/Schedule.styles";
+import {DropdownItem, ProfileDropdown} from "../../styles/components/Profile.styles";
+
 
 const ProfileMenu = ({ isOpen, onToggle }) => {
     return (

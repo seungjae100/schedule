@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useCallback, useMemo, useState} from "react";
 import {CATEGORY_COLORS, SCHEDULE_CATEGORIES} from "../constants/scheduleConstants";
 import {createSchedule, deleteSchedule, getAllSchedules, getSchedulesByPeriod, updateSchedule} from "../api/schedule";
 
@@ -46,17 +46,23 @@ export const useSchedule = () => {
         category: Object.keys(SCHEDULE_CATEGORIES)[0]
     });
 
+    // 필터 관련 상태
+    const [selectedCategory, setSelectedCategory] = useState("");
+
+    // 검색 관련 상태
+    const [searchResults, setSearchResults] = useState([]);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+
+
     // 날짜 포맷 함수
     const formatDateForInput = (date) => {
         if (!date) return ''; // 날짜가 없는 경우 처리
-
-        // 문자열이나 다른 형식의 날짜를 Date 객체로 변환
         const dateObject = new Date(date);
         return dateObject.toISOString().slice(0, 16);
     };
 
     // 일정 데이터 조회
-    const fetchAndFormatEvents = async () => {
+    const fetchAndFormatEvents = useCallback(async () => {
         try {
             const data = await getAllSchedules();
             const formattedEvents = data.map(formatEventData);
@@ -64,7 +70,7 @@ export const useSchedule = () => {
         } catch (error) {
             console.error('일정조회 실패: ', error);
         }
-    };
+    }, []);
 
     // 생성 모달 핸들러
     const handleOpenCreateModal = () => {
@@ -159,6 +165,37 @@ export const useSchedule = () => {
         }
     };
 
+    // 카테고리 필터링
+    const filteredEvents = useMemo(() => {
+        if (!events || events.length === 0) return [];
+        if (!selectedCategory) return events;
+        return events.filter(event => {
+            return event.extendedProps && event.extendedProps.category === selectedCategory;
+        });
+    }, [selectedCategory, events]);
+
+
+
+    // 검색 기능
+    const handleSearch = (keyword) => {
+        if (!keyword.trim()) {
+            setSearchResults([]);
+            setShowSearchResults(false);
+            return;
+        }
+
+        const results = events.filter(event =>
+            event.title.toLowerCase().includes(keyword.toLowerCase()));
+        setSearchResults(results);
+        setShowSearchResults(true);
+    };
+
+    // 검색 결과 클릭 처리
+    const handleSearchResultClick = (event) => {
+        setSelectedEvent(event);
+        setIsViewModalOpen(true);
+        setShowSearchResults(false);
+    };
 
 
     const handleDatesSet = async (arg) => {
@@ -172,7 +209,7 @@ export const useSchedule = () => {
     };
 
     return {
-        events,
+        events: filteredEvents || [],
         // 생성 모달 관련
         isCreateModalOpen,
         newEvent,
@@ -196,6 +233,16 @@ export const useSchedule = () => {
         // 캘린더 이벤트 핸들러
         handleDatesSet,
         // 기타
-        fetchAndFormatEvents
+        fetchAndFormatEvents,
+        // 카테고리 필터
+        selectedCategory,
+        setSelectedCategory,
+        filteredEvents,
+        // 검색 관련
+        handleSearch,
+        searchResults,
+        showSearchResults,
+        handleSearchResultClick,
+        setShowSearchResults
     };
 };

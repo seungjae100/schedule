@@ -1,5 +1,6 @@
 import React from 'react';
-import { CategorySelect } from "../../styles/components/Schedule.styles";
+import { CategorySelect } from "../../styles/components/Filter.styles";
+import { SCHEDULE_CATEGORIES } from '../../constants/scheduleConstants';
 
 const ScheduleFilter = ({ selectedCategory, onCategoryChange }) => {
     return (
@@ -7,14 +8,12 @@ const ScheduleFilter = ({ selectedCategory, onCategoryChange }) => {
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
         >
-            <option value="">카테고리 필터</option>
-            <option value="WORK">업무</option>
-            <option value="APPOINTMENT">약속</option>
-            <option value="ETC">기타</option>
-            <option value="BIRTHDAY">생일</option>
-            <option value="FAMILY">가족</option>
-            <option value="MEETING">회의</option>
-            <option value="SELF_DEVELOPMENT">자기계발</option>
+            <option value="">전체</option>
+            {Object.entries(SCHEDULE_CATEGORIES).map(([key, {label}]) => (
+                <option key={key} value={key}>
+                    {label}
+                </option>
+            ))}
         </CategorySelect>
     );
 };

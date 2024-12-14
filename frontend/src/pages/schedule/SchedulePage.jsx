@@ -14,16 +14,24 @@ import ModifyScheduleModal from "../../components/schedule/ModifyScheduleModal";
 import ScheduleSearch from "../../components/schedule/ScheduleSearch";
 import ProfileMenu from "../../components/schedule/ProfileMenu";
 import ScheduleFilter from "../../components/schedule/ScheduleFilter";
+import {
+    Container,
+    HeaderContainer,
+    HeaderTitle,
+    ContentContainer,
+    CalendarWrapper
+} from "../../styles/components/Schedule.styles";
+import {SearchContainer, SearchWrapper} from "../../styles/components/Search.styles";
+import {FilterWrapper} from "../../styles/components/Filter.styles";
 
 
 const SchedulePage = () => {
     const navigate = useNavigate();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [searchKeyword, setSearchKeyword] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("");
+
 
     const {
-        events,
         // 생성 모달 관련
         isCreateModalOpen,
         newEvent,
@@ -47,28 +55,39 @@ const SchedulePage = () => {
         // 기타
         handleDatesSet,
         fetchAndFormatEvents,
-        searchSchedules
+        // 검색
+        handleSearch,
+        showSearchResults,
+        handleSearchResultClick,
+        searchResults,
+        // 카테고리 필터
+        selectedCategory,
+        setSelectedCategory,
+        filteredEvents,
     } = useSchedule();
 
     useEffect(() => {
         fetchAndFormatEvents();
-    }, []);
+    }, [fetchAndFormatEvents]);
 
     return (
-        <PageContainer>
-            <GlobalCalendarStyle/>
-            {/* 메인 헤더 */}
-            <Header>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+        <Container>
+            <HeaderContainer>
+                <SearchContainer>
                     <HeaderTitle>캘린더</HeaderTitle>
-                    <ScheduleSearch
-                        searchKeyword={searchKeyword}
-                        setSearchKeyword={setSearchKeyword}
-                        onSearch={searchSchedules}
-                    />
-                </div>
+                    <SearchWrapper>
+                        <ScheduleSearch
+                            searchKeyword={searchKeyword}
+                            setSearchKeyword={setSearchKeyword}
+                            onSearch={handleSearch}
+                            searchResults={searchResults}
+                            showResults={showSearchResults}
+                            onResultClick={handleSearchResultClick}
+                        />
+                    </SearchWrapper>
+                </SearchContainer>
                 <ButtonGroup>
-                    <IconButton onClick={() => navigate('/')}>
+                    <IconButton variant="secondary" onClick={() => navigate('/')}>
                         <Home size={20} />
                         홈으로
                     </IconButton>
@@ -77,42 +96,43 @@ const SchedulePage = () => {
                         onToggle={() => setIsProfileOpen(!isProfileOpen)}
                     />
                 </ButtonGroup>
-            </Header>
+            </HeaderContainer>
 
-            {/* 캘린더 바디 */}
             <ContentContainer>
-                <div style={{ position: 'relative' }}>
-                    <FullCalendar
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-                        initialView="dayGridMonth"
-                        headerToolbar={{
-                            left: 'prev,next today',
-                            center: 'title',
-                            right: 'newSchedule dayGridMonth,timeGridWeek,timeGridDay'
-                        }}
-                        customButtons={{
-                            newSchedule: {
-                                text: '새 일정',
-                                click: handleOpenCreateModal
-                            }
-                        }}
-                        dayMaxEvents={true}
-                        events={events}
-                        eventClick={handleEventClick}
-                        datesSet={handleDatesSet}
-                        locale="ko"
-                    />
-                    <div style={{
-                        position: 'absolute',
-                        top: '8px',
-                        left: '180px'  // today 버튼 우측에 위치하도록 조정
-                    }}>
-                        <ScheduleFilter
-                            selectedCategory={selectedCategory}
-                            onCategoryChange={setSelectedCategory}
+                <CalendarWrapper>
+                    <div style={{ position: 'relative' }}>
+                        <FullCalendar
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                            initialView="dayGridMonth"
+                            headerToolbar={{
+                                left: 'prev,next today',
+                                center: 'title',
+                                right: 'newSchedule dayGridMonth,timeGridWeek,timeGridDay'
+                            }}
+                            customButtons={{
+                                newSchedule: {
+                                    text: '새 일정',
+                                    click: handleOpenCreateModal
+                                }
+                            }}
+                            dayMaxEvents={true}
+                            events={filteredEvents}
+                            eventClick={handleEventClick}
+                            datesSet={handleDatesSet}
+                            locale="ko"
+                            displayEventTime={false}
+                            eventDisplay="block"
+                            eventOverlap={true}
+                            eventBorderColor="transparent"
                         />
+                        <FilterWrapper>
+                            <ScheduleFilter
+                                selectedCategory={selectedCategory}
+                                onCategoryChange={setSelectedCategory}
+                            />
+                        </FilterWrapper>
                     </div>
-                </div>
+                </CalendarWrapper>
             </ContentContainer>
 
             <CreateScheduleModal
@@ -138,7 +158,7 @@ const SchedulePage = () => {
                 modifyEvent={modifyEvent}
                 setModifyEvent={setModifyEvent}
             />
-        </PageContainer>
+        </Container>
     );
 };
 
