@@ -1,9 +1,12 @@
 import {IconButton} from "../../styles/components/Common.styles";
 import {ChevronDown, User} from "lucide-react";
 import {DropdownItem, ProfileDropdown} from "../../styles/components/Profile.styles";
+import {useNavigate} from "react-router-dom";
 
 
 const ProfileMenu = ({ isOpen, onToggle }) => {
+    const navigate = useNavigate();
+
     return (
         <div style={{ position: 'relative'}}>
             <IconButton onClick={onToggle}>
@@ -21,7 +24,9 @@ const ProfileMenu = ({ isOpen, onToggle }) => {
             {isOpen && (
                 <ProfileDropdown>
                     <DropdownItem>내 정보 수정</DropdownItem>
-                    <DropdownItem>내 일정</DropdownItem>
+                    <DropdownItem onClick={() => navigate('/schedules/all')}>
+                        내 일정
+                    </DropdownItem>
                 </ProfileDropdown>
             )}
         </div>

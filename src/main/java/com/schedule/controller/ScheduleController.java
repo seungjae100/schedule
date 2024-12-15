@@ -74,7 +74,6 @@ public class ScheduleController {
             @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'") LocalDateTime endDate) {
         return ResponseEntity.ok(scheduleService.getScheduleByPeriod(userDetails, startDate, endDate));
     }
-
     // 일정 검색
     @GetMapping("/search")
     public ResponseEntity<List<ScheduleResponse>> searchSchedules(

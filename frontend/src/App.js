@@ -5,6 +5,7 @@ import HomePage from "./pages/home/HomePage";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import SchedulePage from "./pages/schedule/SchedulePage";
 import React from "react";
+import ScheduleListPage from "./pages/schedule/ScheduleListPage";
 
 
 function App() {
@@ -24,6 +25,12 @@ function App() {
                 <SchedulePage />
             </PrivateRoute>
         } />
+        <Route path="/schedules/all" element={
+            <PrivateRoute>
+                <ScheduleListPage />
+            </PrivateRoute>
+        } />
+
 
         {/* 잘못된 경로는 홈으로 리다이렉트 */}
         <Route path="*" element={<Navigate to="/" replace /> } />
