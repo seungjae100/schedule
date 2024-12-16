@@ -1,19 +1,41 @@
 import client from "./client";
-import {removeTokens, setTokens} from "../utils/token";
+import {getRefreshToken, removeTokens, setTokens} from "../utils/token";
 
 export const login = async (loginData) =>  {
     try {
         const response = await client.post('/users/login', loginData);
         const { accessToken, refreshToken } = response.data;
-        setTokens(accessToken, refreshToken);
+
+        // 토큰 저장
+        sessionStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
+export const refreshAccessToken = async () => {
+    try {
+        const refreshToken = getRefreshToken();
+        const response = await client.post('/users/token', null, {
+            headers: {
+                'Refresh-Token': refreshToken
+            }
+        });
+        const { accessToken } = response.data;
+        setTokens(accessToken, refreshToken); // 새 엑서스 토큰 저장, 리프레시 토큰 저장
+        return response.data;
+    } catch (error) {
+        removeTokens(); // 토큰 갱신 실패시 모든 토큰 제거
+        throw error;
+    }
+}
+
 export const logout = () => {
     removeTokens();
+    window.location.href = '/';
 };
 
 export const signup = async (signupData) => {

@@ -1,68 +1,32 @@
-import client from "./client";
+import client from './client';
 
-export const getAllSchedules = async () => {
-    try {
-        const response = await client.get('/schedules/all');
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+// 일정 생성
+export const createSchedule = async (scheduleData) => {
+    const response = await client.post('/schedules', scheduleData);
+    return response.data;
 };
 
-export const getSchedule = async (scheduleId) => {
-    try {
-        const response = await client.get(`/schedules/${scheduleId}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
-
-export const  createSchedule = async (scheduleData) => {
-    try {
-        const response = await client.post('/schedules', scheduleData);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-};
-
+// 일정 수정
 export const updateSchedule = async (scheduleId, updateData) => {
-    try {
-        const response = await client.put(`/schedules/${scheduleId}`, updateData);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+    const response = await client.put(`/schedules/${scheduleId}`, updateData);
+    return response.data;
 };
 
-export const getScheduleByPeriod = async (startDate, endDate) => {
-    try {
-        const response = await client.get('/schedules/period', {
-            params: { startDate, endDate }
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+// 일정 삭제
+export const deleteSchedule = async (scheduleId) => {
+    await client.delete(`/schedules/${scheduleId}`);
 };
 
-export const searchSchedules = async (keyword) => {
-    try {
-        const response = await client.get('/schedules/search', {
-            params: { keyword }
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+// 전체 일정 조회
+export const getAllSchedules = async () => {
+    const response = await client.get('/schedules/all');
+    return response.data;
 };
 
-export const getSchedulesByCategory = async (category) => {
-    try {
-        const response = await client.get(`schedules/category/${category}`);
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
-}
+// 기간별 일정 조회
+export const getSchedulesByPeriod = async (startDate, endDate) => {
+    const response = await client.get('/schedules/period', {
+        params: { startDate, endDate }
+    });
+    return response.data;
+};

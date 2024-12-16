@@ -4,6 +4,7 @@ import {useState} from "react";
 import {signup} from "../../api/user";
 import Input from "../../components/common/Input";
 import Button from "../../components/common/Button";
+import React from "react";
 
 const Container = styled.div`
     min-height: 100vh;
