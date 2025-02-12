@@ -105,7 +105,7 @@ const SchedulePage = () => {
                             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                             initialView="dayGridMonth"
                             headerToolbar={{
-                                left: 'prev,next today',
+                                left: 'prev,next',
                                 center: 'title',
                                 right: 'newSchedule dayGridMonth,timeGridWeek,timeGridDay'
                             }}
@@ -124,6 +124,18 @@ const SchedulePage = () => {
                             eventDisplay="block"
                             eventOverlap={true}
                             eventBorderColor="transparent"
+
+                            height="auto"
+                            contentHeight={(view) => (view.type === "dayGridMonth" ? 800 : "auto")}
+                            aspectRatio={1.8}
+
+                            // Week/Day 뷰에서 24시간 표시
+                            slotMinTime="00:00:00"
+                            slotMaxTime="24:00:00"
+                            slotDuration="00:30:00"
+                            slotLabelInterval="01:00:00"
+                            allDaySlot={false}
+                            nowIndicator={true}
                         />
                         <FilterWrapper>
                             <ScheduleFilter

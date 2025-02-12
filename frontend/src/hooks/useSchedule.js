@@ -56,9 +56,16 @@ export const useSchedule = () => {
 
     // 날짜 포맷 함수
     const formatDateForInput = (date) => {
-        if (!date) return ''; // 날짜가 없는 경우 처리
-        const dateObject = new Date(date);
-        return dateObject.toISOString().slice(0, 16);
+        if (!date) return '';
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+        return formattedDate;
     };
 
     // 일정 데이터 조회
@@ -75,10 +82,14 @@ export const useSchedule = () => {
     // 생성 모달 핸들러
     const handleOpenCreateModal = () => {
         const now = new Date();
+
+        //  브라우저의 현재 시간을 한국 시간(KST)으로 변환
+        const koreaTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes());
+
         setNewEvent({
             title: '',
-            startDate: formatDateForInput(now),
-            endDate: formatDateForInput(new Date(now.getTime() + 60 * 60 * 1000)),
+            startDate: formatDateForInput(koreaTime), //  한국 시간 반영
+            endDate: formatDateForInput(new Date(koreaTime.getTime() + 60 * 60 * 1000)), // +1시간
             description: '',
             category: Object.keys(SCHEDULE_CATEGORIES)[0]
         });
