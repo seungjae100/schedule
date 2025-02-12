@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import {
@@ -15,14 +15,26 @@ import { ModalButtons } from '../../styles/components/Modal.styles';
 import {SCHEDULE_CATEGORIES} from "../../constants/scheduleConstants";
 
 const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent }) => {
+    useEffect(() => {
+        console.log("newEvent.category 변경됨: ", newEvent.category);
+    }, [newEvent.category]);
+
     if (!isOpen) return null;
 
     const handleCategoryChange = (e) => {
-        setNewEvent({
-            ...newEvent,
-            category: e.target.value
-        });
+        const selectedCategory = e.target.value;
+        console.log("선택된 카테고리 (before setState):", selectedCategory);
+
+        setNewEvent(prevState => ({
+            ...prevState,
+            category: selectedCategory
+        }));
+
+        setTimeout(() => {
+            console.log("newEvent.category (after setState):", newEvent.category);
+        }, 100);
     };
+
 
     return (
         <>
