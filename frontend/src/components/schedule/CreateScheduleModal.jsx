@@ -16,14 +16,14 @@ import {SCHEDULE_CATEGORIES} from "../../constants/scheduleConstants";
 
 const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent }) => {
     useEffect(() => {
-        console.log("newEvent.category 변경됨: ", newEvent.category);
+
     }, [newEvent.category]);
 
     if (!isOpen) return null;
 
     const handleCategoryChange = (e) => {
         const selectedCategory = e.target.value;
-        console.log("선택된 카테고리 (before setState):", selectedCategory);
+
 
         setNewEvent(prevState => ({
             ...prevState,
@@ -31,7 +31,6 @@ const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent 
         }));
 
         setTimeout(() => {
-            console.log("newEvent.category (after setState):", newEvent.category);
         }, 100);
     };
 

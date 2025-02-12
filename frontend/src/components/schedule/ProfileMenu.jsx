@@ -23,7 +23,8 @@ const ProfileMenu = ({ isOpen, onToggle }) => {
 
             {isOpen && (
                 <ProfileDropdown>
-                    <DropdownItem>내 정보 수정</DropdownItem>
+                    <DropdownItem onClick={() => navigate('/users/me')}>
+                        내 정보 수정</DropdownItem>
                     <DropdownItem onClick={() => navigate('/schedules/all')}>
                         내 일정
                     </DropdownItem>
