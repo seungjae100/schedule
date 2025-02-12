@@ -63,7 +63,7 @@ public class UserService {
 
         user.updateUserInfo(
                 request.getName(),
-                request.getPassword() != null ?
+                request.getPassword() != null && !request.getPassword().isEmpty() ?
                     passwordEncoder.encode(request.getPassword()) :
                     user.getPassword()
         ); // 비밀번호 암호화

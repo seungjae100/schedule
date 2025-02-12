@@ -23,11 +23,13 @@ public class JwtService {
     private final JwtProperties jwtProperties;
 
     // 엑서스 토큰 생성
+    // UserDetails 정보를 기반으로 JWT 토큰 생성
     public String generateToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, jwtProperties.getAccessTokenExpiration());
     }
 
     // 리프레시 토큰 생성
+    // 엑서스 토큰이 만료 되었을 때 새로운 토큰을 발급받기 위해 사용
     public String generateRefreshToken(UserDetails userDetails) {
         return buildToken(new HashMap<>(), userDetails, jwtProperties.getRefreshTokenExpiration());
     }

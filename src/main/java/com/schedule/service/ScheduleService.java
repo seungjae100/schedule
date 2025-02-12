@@ -3,7 +3,6 @@ package com.schedule.service;
 import com.schedule.domain.User;
 import com.schedule.domain.schedule.Schedule;
 import com.schedule.domain.schedule.ScheduleCategory;
-import com.schedule.domain.schedule.ScheduleStatus;
 import com.schedule.dto.request.ScheduleCreateRequest;
 import com.schedule.dto.request.ScheduleUpdateRequest;
 import com.schedule.dto.response.ScheduleResponse;
@@ -48,7 +47,6 @@ public class ScheduleService {
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .category(request.getCategory())
-                .status(ScheduleStatus.RESERVED)
                 .build();
         return scheduleRepository.save(schedule).getId();
     }
@@ -106,7 +104,7 @@ public class ScheduleService {
 
         // 해당 일정의 소유자인지 확인
         if (!schedule.getUser().getId().equals(user.getId())) {
-            throw new IllegalStateException("       해당 일정에 대한 권한이 없습니다.");
+            throw new IllegalStateException("해당 일정에 대한 권한이 없습니다.");
         }
 
         return new ScheduleResponse(schedule);
