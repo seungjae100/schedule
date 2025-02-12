@@ -9,13 +9,14 @@ const Label = styled.label`
     display: block;
     font-size: 0.875rem;
     font-weight: 500;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
     color: #374151;
 `;
 
 const StyledInput = styled.input`
     width: 100%;
-    padding: 0.5rem 0.75rem;
+    max-width: 24rem;
+    padding: 0.75rem 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     

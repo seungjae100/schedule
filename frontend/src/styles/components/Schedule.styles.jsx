@@ -40,6 +40,8 @@ export const CalendarWrapper = styled.div`
     padding: 1.5rem;
     border-radius: 0.75rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    height: 100%; // 부모 컨테이너 높이 맞추기
+    min-height: 700px; //  최소 높이 지정 (Month 뷰가 너무 납작하지 않도록)
 
     .fc {
         background: white;
@@ -94,4 +96,3 @@ export const CalendarWrapper = styled.div`
         margin-top: 1px;
     }
 `;
-

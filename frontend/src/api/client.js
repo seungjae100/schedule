@@ -1,13 +1,12 @@
 import axios from 'axios';
 import {getAccessToken, getRefreshToken, removeTokens, setTokens} from "../utils/token";
-import Promis from "q";
 
 const client = axios.create({
     baseURL: 'http://localhost:8080',
     headers: {
         'Content-Type': 'application/json',
     },
-    withCredentials: "true"
+    withCredentials: true
 });
 
 // 요청 인터셉터
@@ -56,7 +55,7 @@ client.interceptors.response.use(
                 // 토큰 생신 실패 시
                 removeTokens();
                 window.location.href = '/users/login';
-                return Promis.reject(refreshError);
+                return Promise.reject(refreshError);
             }
         }
 

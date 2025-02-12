@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import {
@@ -15,14 +15,25 @@ import { ModalButtons } from '../../styles/components/Modal.styles';
 import {SCHEDULE_CATEGORIES} from "../../constants/scheduleConstants";
 
 const CreateScheduleModal = ({ isOpen, onClose, onSubmit, newEvent, setNewEvent }) => {
+    useEffect(() => {
+
+    }, [newEvent.category]);
+
     if (!isOpen) return null;
 
     const handleCategoryChange = (e) => {
-        setNewEvent({
-            ...newEvent,
-            category: e.target.value
-        });
+        const selectedCategory = e.target.value;
+
+
+        setNewEvent(prevState => ({
+            ...prevState,
+            category: selectedCategory
+        }));
+
+        setTimeout(() => {
+        }, 100);
     };
+
 
     return (
         <>

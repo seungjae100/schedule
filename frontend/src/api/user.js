@@ -47,6 +47,7 @@ export const signup = async (signupData) => {
     }
 };
 
+// 로그인한 사용자 정보 가져오기
 export const getCurrentUser = async () => {
     try {
         const response = await client.get('/users/me');
@@ -56,6 +57,7 @@ export const getCurrentUser = async () => {
     }
 };
 
+// 사용자 정보 수정
 export const updateUser = async (updateData) => {
     try {
         const response = await client.put('/users/me', updateData);
@@ -65,9 +67,12 @@ export const updateUser = async (updateData) => {
     }
 };
 
+// 사용자 정보 삭제
 export const deleteUser = async () => {
     try {
         const response = await client.delete('users/me');
+        sessionStorage.clear();
+        localStorage.clear();
         return response.data;
     } catch (error) {
         throw error;
