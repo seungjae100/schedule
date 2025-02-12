@@ -71,6 +71,8 @@ export const updateUser = async (updateData) => {
 export const deleteUser = async () => {
     try {
         const response = await client.delete('users/me');
+        sessionStorage.clear();
+        localStorage.clear();
         return response.data;
     } catch (error) {
         throw error;

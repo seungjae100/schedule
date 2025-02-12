@@ -132,7 +132,7 @@ const SchedulePage = () => {
                             // Week/Day 뷰에서 24시간 표시
                             slotMinTime="00:00:00"
                             slotMaxTime="24:00:00"
-                            slotDuration="01:00:00"
+                            slotDuration="00:30:00"
                             slotLabelInterval="01:00:00"
                             allDaySlot={false}
                             nowIndicator={true}
