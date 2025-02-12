@@ -41,16 +41,16 @@ public class UserController {
     // 회원 정보 수정
     @PutMapping("/me")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable Long id,
+            @AuthenticationPrincipal User user,
             @Valid @RequestBody UserUpdateRequest request) {
-        UserResponse response = userService.updateUser(id, request);
+        UserResponse response = userService.updateUser(user.getId(), request);
         return ResponseEntity.ok(response);
     }
 
     // 회원 삭제
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal User user) {
+        userService.deleteUser(user.getId());
         return ResponseEntity.noContent().build();
     }
 

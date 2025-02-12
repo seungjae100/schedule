@@ -36,20 +36,15 @@ public class Schedule extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ScheduleStatus status;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ScheduleCategory category;
 
     @Builder
-    public Schedule(User user, String title, String description, LocalDateTime startDate, LocalDateTime endDate, ScheduleStatus status, ScheduleCategory category) {
+    public Schedule(User user, String title, String description, LocalDateTime startDate, LocalDateTime endDate, ScheduleCategory category) {
         this.user = user;
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.status = status;
         this.category = category;
     }
 
@@ -62,8 +57,4 @@ public class Schedule extends BaseTimeEntity{
         this.category = category;
     }
 
-    // 상태 변경 메서드
-    public void changeStatus(ScheduleStatus status) {
-        this.status = status;
-    }
 }

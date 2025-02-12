@@ -23,7 +23,6 @@ import java.util.List;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
-    private final UserRepository userRepository;
 
     // 일정 생성
     @PostMapping
